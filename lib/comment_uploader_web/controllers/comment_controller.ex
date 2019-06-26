@@ -1,38 +1,56 @@
 defmodule CommentUploaderWeb.CommentController do
   use CommentUploaderWeb, :controller
-  alias CommentFilter.Repo
   alias CommentUploader.Comments
   alias CommentUploader.Comments.Comment
-  alias CommentFilter.FileProcessor
-  import Ecto.Query
+  alias CommentUploader.FileProcessor
+  alias CommentUploader.Repo
 
   def index(conn, _params) do
-    comments = Comments.list_comments()
-    changeset = Comments.change_comment(%Comment{})
-    render(conn, "index.html", comments: comments, changeset: changeset)
+    changeset = Comment.changeset(%Comment{}, %{})
+    render(conn, "index.html", changeset: changeset)
   end
 
   def create(conn, %{"comment" => comment_params}) do
-    IO.inspect comment_params
-    if upload = comment_params["csv"] do
-      extension = Path.extname(upload.filename)
-      if extension == ".csv" do
-        FileProcessor.upload_data(upload.path)
-        case Comments.create_comment(comment_params) do
-          {:ok, %Ecto.Changeset{} = changeset} ->
-            conn
-            |> put_flash(:info, "Comment created successfully.")
-            |> render("index.html", changeset: changeset, comments: Comments.list_comments())
+    error_message =
+      if upload = comment_params["csv"] do
+        extension = Path.extname(upload.filename)
 
-          {:error, %Ecto.Changeset{} = changeset} ->
-            conn
-            |> put_flash(:info, "Error uploading file.")
-            |> render("index.html", changeset: changeset, comments: Comments.list_comments())
-            #render(conn, "index.html", changeset: changeset)
-            #text(conn, "Error")
+        if extension == ".csv" do
+          comment_list = FileProcessor.upload_data(upload.path)
+          changesets = Enum.map(comment_list, fn comment ->
+            Comment.changeset(%Comment{}, comment)
+          end)
+
+          result = changesets
+            |> Enum.with_index()
+            |> Enum.reduce(Ecto.Multi.new(), fn ({changeset, index}, multi) ->
+                Ecto.Multi.insert(multi, Integer.to_string(index), changeset)
+            end)
+            |> Repo.transaction
+
+          case result do
+            {:ok, _} ->
+              conn
+                |> put_flash(:info, "Comment created successfully.")
+                |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
+                |> render("index.html")
+
+            {:error, _, changeset, _} ->
+              conn
+                |> put_flash(:error, "Error uploading file.")
+                |> render("index.html", changeset: changeset)
+          end
+        else
+          "Wrong file format."
         end
+      else
+        "No file selected."
       end
-    end
+
+    conn
+      |> put_flash(:error, error_message)
+      |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
+      |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do

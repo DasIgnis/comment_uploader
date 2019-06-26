@@ -1,37 +1,5 @@
 
-<h1><%= gettext "Database has %{count} comments", count: length(@comments) %></h1>
+<h1><%= gettext "Database has %{count} comments", count: length(Comments.list_comments()) %></h1>
 
 <%= render "form.html", Map.put(assigns, :action, Routes.comment_path(@conn, :create)) %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Text</th>
-      <th>Gender</th>
-      <th>City</th>
-      <th>Emote</th>
-      <th>Month</th>
-      <th>Daytime</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for comment <- @comments do %>
-    <tr>
-      <td><%= comment.text %></td>
-      <td><%= comment.gender %></td>
-      <td><%= comment.city %></td>
-      <td><%= comment.emote %></td>
-      <td><%= comment.month %></td>
-      <td><%= comment.daytime %></td>
-
-      <td>
-        <%= link "Show", to: Routes.comment_path(@conn, :show, comment) %>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
-
-<span><%= link "New Comment", to: Routes.comment_path(@conn, :new) %></span>
