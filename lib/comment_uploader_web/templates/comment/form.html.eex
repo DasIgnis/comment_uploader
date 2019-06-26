@@ -1,35 +1,11 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
 
-  <%= label f, :text %>
-  <%= textarea f, :text %>
-  <%= error_tag f, :text %>
+   <div class="form-group">
+    <label>File Upload</label>
+    <%= file_input f, :csv, class: "form-control" %>
+  </div>
 
-  <%= label f, :gender %>
-  <%= text_input f, :gender %>
-  <%= error_tag f, :gender %>
-
-  <%= label f, :city %>
-  <%= text_input f, :city %>
-  <%= error_tag f, :city %>
-
-  <%= label f, :emote %>
-  <%= number_input f, :emote %>
-  <%= error_tag f, :emote %>
-
-  <%= label f, :month %>
-  <%= number_input f, :month %>
-  <%= error_tag f, :month %>
-
-  <%= label f, :daytime %>
-  <%= text_input f, :daytime %>
-  <%= error_tag f, :daytime %>
-
-  <div>
-    <%= submit "Save" %>
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 <% end %>

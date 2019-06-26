@@ -1,6 +1,7 @@
-<h1>Listing Comments</h1>
 
-<h1><%= gettext "Database has %{count} comments", count: @comments_count %></h1>
+<h1><%= gettext "Database has %{count} comments", count: length(@comments) %></h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.comment_path(@conn, :create)) %>
 
 <table>
   <thead>
@@ -27,8 +28,6 @@
 
       <td>
         <%= link "Show", to: Routes.comment_path(@conn, :show, comment) %>
-        <%= link "Edit", to: Routes.comment_path(@conn, :edit, comment) %>
-        <%= link "Delete", to: Routes.comment_path(@conn, :delete, comment), method: :delete, data: [confirm: "Are you sure?"] %>
       </td>
     </tr>
 <% end %>

@@ -3,28 +3,35 @@ defmodule CommentUploaderWeb.CommentController do
   alias CommentFilter.Repo
   alias CommentUploader.Comments
   alias CommentUploader.Comments.Comment
+  alias CommentFilter.FileProcessor
   import Ecto.Query
 
   def index(conn, _params) do
     comments = Comments.list_comments()
-    comments_count = length(comments)
-    render(conn, "index.html", comments: comments, comments_count: comments_count)
-  end
-
-  def new(conn, _params) do
     changeset = Comments.change_comment(%Comment{})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, "index.html", comments: comments, changeset: changeset)
   end
 
   def create(conn, %{"comment" => comment_params}) do
-    case Comments.create_comment(comment_params) do
-      {:ok, comment} ->
-        conn
-        |> put_flash(:info, "Comment created successfully.")
-        |> redirect(to: Routes.comment_path(conn, :show, comment))
+    IO.inspect comment_params
+    if upload = comment_params["csv"] do
+      extension = Path.extname(upload.filename)
+      if extension == ".csv" do
+        FileProcessor.upload_data(upload.path)
+        case Comments.create_comment(comment_params) do
+          {:ok, %Ecto.Changeset{} = changeset} ->
+            conn
+            |> put_flash(:info, "Comment created successfully.")
+            |> render("index.html", changeset: changeset, comments: Comments.list_comments())
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            conn
+            |> put_flash(:info, "Error uploading file.")
+            |> render("index.html", changeset: changeset, comments: Comments.list_comments())
+            #render(conn, "index.html", changeset: changeset)
+            #text(conn, "Error")
+        end
+      end
     end
   end
 
@@ -33,32 +40,5 @@ defmodule CommentUploaderWeb.CommentController do
     render(conn, "show.html", comment: comment)
   end
 
-  def edit(conn, %{"id" => id}) do
-    comment = Comments.get_comment!(id)
-    changeset = Comments.change_comment(comment)
-    render(conn, "edit.html", comment: comment, changeset: changeset)
-  end
 
-  def update(conn, %{"id" => id, "comment" => comment_params}) do
-    comment = Comments.get_comment!(id)
-
-    case Comments.update_comment(comment, comment_params) do
-      {:ok, comment} ->
-        conn
-        |> put_flash(:info, "Comment updated successfully.")
-        |> redirect(to: Routes.comment_path(conn, :show, comment))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", comment: comment, changeset: changeset)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    comment = Comments.get_comment!(id)
-    {:ok, _comment} = Comments.delete_comment(comment)
-
-    conn
-    |> put_flash(:info, "Comment deleted successfully.")
-    |> redirect(to: Routes.comment_path(conn, :index))
-  end
 end
