@@ -7,7 +7,7 @@ defmodule CommentUploader.Comments.Comment do
   schema "comments" do
     field :city, :string
     field :daytime, :string
-    field :emote, :integer
+    field :emote, :string
     field :gender, :string
     field :month, :integer
     field :text, :string

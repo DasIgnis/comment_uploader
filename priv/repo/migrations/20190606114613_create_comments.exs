@@ -6,7 +6,7 @@ defmodule CommentUploader.Repo.Migrations.CreateComments do
       add :text, :text
       add :gender, :string
       add :city, :string
-      add :emote, :integer
+      add :emote, :string
       add :month, :integer
       add :daytime, :string
 

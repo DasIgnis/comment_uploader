@@ -25,7 +25,14 @@ defmodule CommentUploader.FileProcessor do
     # Теперь у нас есть список [пол, город, текст, timestamp]
     # Обработка полей текста и timestamp
     text = Enum.at(cleaned_list, 2)
-    emote = Veritaserum.analyze(text)
+    emote_val = Veritaserum.analyze(text)
+    emote = cond do
+      emote_val < -5 -> "Very negative"
+      emote_val < 0  -> "Negative"
+      emote_val == 0 -> "Neutral"
+      emote_val < 5  -> "Positive"
+      true           -> "Very positive"
+    end
     timestamp = case Integer.parse(Enum.at(cleaned_list, 3)) do
       {timestamp, _} -> timestamp
       :error         -> 0
@@ -37,12 +44,12 @@ defmodule CommentUploader.FileProcessor do
     month = DateTime.to_date(datetime).month
     hour = DateTime.to_time(datetime).hour
     daytime = cond do
-      hour < 6  -> "night"
-      hour < 12 -> "morning"
-      hour < 18 -> "day"
-      true      -> "evening"
+      hour < 6  -> "Night"
+      hour < 12 -> "Morning"
+      hour < 18 -> "Day"
+      true      -> "Evening"
     end
-    %{gender: Enum.at(cleaned_list, 0), city: Enum.at(cleaned_list, 1), text: text, emote: emote,
+    %{gender: String.capitalize(Enum.at(cleaned_list, 0)), city: Enum.at(cleaned_list, 1), text: text, emote: emote,
         month: month, daytime: daytime}
   end
 

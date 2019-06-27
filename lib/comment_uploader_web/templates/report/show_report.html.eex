@@ -1,3 +1,11 @@
 <%= for value <- @data do %>
-  <h1><%= value.param %></h1>
+  <h1><%= gettext "%{value} (%{count})", value: value.param, count: length(value.records) %></h1>
+  <table>
+  <%= for record <- value.records do %>
+    <tr>
+      <td><%= record["id"] %></td>
+      <td><%= record["text"] %></td>
+    </tr>
+  <% end %>
+</table>
 <% end %>

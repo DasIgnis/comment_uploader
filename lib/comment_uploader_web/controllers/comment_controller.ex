@@ -1,6 +1,5 @@
 defmodule CommentUploaderWeb.CommentController do
   use CommentUploaderWeb, :controller
-  alias CommentUploader.Comments
   alias CommentUploader.Comments.Comment
   alias CommentUploader.FileProcessor
   alias CommentUploader.Repo

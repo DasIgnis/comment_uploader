@@ -4,7 +4,7 @@ defmodule CommentFilter.Validators do
   """
   import Ecto.Changeset
 
-@genders ["female", "male", "undefined"]
+@genders ["Female", "Male"]
 @doc """
   Проверяет корректность пола для данных
   """
@@ -17,7 +17,7 @@ def validate_gender(changeset) do
   end
 end
 
-@daystamps ["morning", "day", "evening", "night"]
+@daystamps ["Morning", "Day", "Evening", "Night"]
 @doc """
   Проверяет корректность времени суток для данных
   """

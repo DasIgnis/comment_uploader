@@ -21,8 +21,8 @@ defmodule CommentUploaderWeb.ReportController do
     format = report_params["report_f"]
     case format do
       "html" -> conn
-        #|> assign(:data, data)
-        |> render("show_report.html", data: data)
+        |> assign(:data, data)
+        |> render("show_report.html")
     end
   end
 end
