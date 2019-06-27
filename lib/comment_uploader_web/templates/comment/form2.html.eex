@@ -1,0 +1,18 @@
+<div class="form-group">
+  <h2>Отчет по отзывам</h2>
+
+<%= form_for @changeset, Routes.report_path(@conn, :create), fn f -> %>
+
+  <div class="form-group">
+    <%= select f, :param, 
+        ["Пол": "gender", "Город": "city", "Эмоциональный окрас": "emote", "Месяц": "month", "Время суток": "daytime"],
+        prompt: "--- Критерий классификации ---" %>
+    <%= select f, :report_f, 
+        ["HTML-страница": "html", "Excel-файл": "excel"],
+        prompt: "--- Формат отчета ---" %>
+    <%= submit "Сформировать", class: "btn btn-primary" %>
+  </div>
+
+<% end %>
+  
+</div>

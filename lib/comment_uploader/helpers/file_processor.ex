@@ -12,7 +12,7 @@ defmodule CommentUploader.FileProcessor do
     end
     File.stream!(path)
       |> Stream.map(&String.split(&1, ","))
-      |> Enum.map(&process_list_data(&1))
+      |> Stream.map(&process_list_data(&1))
   end
 
   @doc """

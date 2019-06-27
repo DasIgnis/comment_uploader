@@ -31,7 +31,7 @@ defmodule CommentUploaderWeb.CommentController do
           case result do
             {:ok, _} ->
               conn
-                |> put_flash(:info, "Comment created successfully.")
+                |> put_flash(:info, "Comments created successfully.")
                 |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
                 |> render("index.html")
 
@@ -51,11 +51,6 @@ defmodule CommentUploaderWeb.CommentController do
       |> put_flash(:error, error_message)
       |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
       |> render("index.html")
-  end
-
-  def show(conn, %{"id" => id}) do
-    comment = Comments.get_comment!(id)
-    render(conn, "show.html", comment: comment)
   end
 
 

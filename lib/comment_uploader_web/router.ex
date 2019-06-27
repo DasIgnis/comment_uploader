@@ -18,7 +18,8 @@ defmodule CommentUploaderWeb.Router do
 
     get "/", PageController, :index
 
-    resources "/comments", CommentController
+    resources "/comments", CommentController, only: [:create, :index]
+    resources "/reports", ReportController, only: [:create]
   end
 
   # Other scopes may use custom stacks.

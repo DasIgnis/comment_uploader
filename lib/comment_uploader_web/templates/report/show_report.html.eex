@@ -1,0 +1,3 @@
+<%= for value <- @data do %>
+  <h1><%= value.param %></h1>
+<% end %>
