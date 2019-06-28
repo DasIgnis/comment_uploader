@@ -1,5 +1,5 @@
 
-<h2><%= gettext "Database has %{count} comments", count: length(Comments.list_comments()) %></h2>
+<h2><%= gettext "В базе данных %{count} отзывов", count: length(Comments.list_comments()) %></h2>
 
 <%= render "form.html", Map.put(assigns, :action, Routes.comment_path(@conn, :create)) %>
 <%= render "form2.html", Map.put(assigns, :action, Routes.report_path(@conn, :create)) %>

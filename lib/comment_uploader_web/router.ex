@@ -16,7 +16,7 @@ defmodule CommentUploaderWeb.Router do
   scope "/", CommentUploaderWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", CommentController, :index
 
     resources "/comments", CommentController, only: [:create, :index]
     resources "/reports", ReportController, only: [:create]

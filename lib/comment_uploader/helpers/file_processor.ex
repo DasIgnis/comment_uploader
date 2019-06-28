@@ -63,7 +63,8 @@ defmodule CommentUploader.FileProcessor do
   def generate_excel_file(data) do
     workbook = %Workbook{sheets:
         Enum.map(data, &generate_sheet(&1))}
-    Elixlsx.write_to(workbook, "_temp/report.xlsx")
+    random_number = :rand.uniform(10000)
+    Elixlsx.write_to(workbook, "_temp/#{random_number}.xlsx")
   end
 
   @doc """
@@ -78,7 +79,10 @@ defmodule CommentUploader.FileProcessor do
   Отправляет файл пользователю
   """
   def init_download(conn, path) do
-
+    filepath = "#{File.cwd!}/#{path}"
+    conn
+      |> Plug.Conn.put_resp_content_type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+      |> Plug.Conn.send_file(200, filepath)
   end
 
 end

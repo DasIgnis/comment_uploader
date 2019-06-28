@@ -13,7 +13,7 @@ defmodule CommentUploaderWeb.CommentController do
     upload = comment_params["csv"]
     extension = Path.extname(upload.filename)
 
-    if extension == ".csv" do
+    status = if extension == ".csv" do
       comment_list = FileProcessor.upload_data(upload.path)
       changesets = Enum.map(comment_list, fn comment ->
         Comment.changeset(%Comment{}, comment)
@@ -27,23 +27,17 @@ defmodule CommentUploaderWeb.CommentController do
         |> Repo.transaction
 
       case result do
-        {:ok, _} ->
-          conn
-            |> put_flash(:info, "Comments created successfully.")
-            |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
-            |> render("index.html")
+        {:ok, _} -> %{key: :info, message: "Comments created successfully."}
 
-        {:error, _, changeset, _} ->
-          conn
-            |> put_flash(:error, "Error uploading file.")
-            |> render("index.html", changeset: changeset)
+        {:error, _, _, _} -> %{key: :error, message: "Error uploading file."}
       end
     else
-      conn
-      |> put_flash(:error, "Wrong file format")
+      %{key: :error, meessage: "Wrong file format"}
+    end
+    conn
+      |> put_flash(status.key, status.message)
       |> assign(:changeset, Comment.changeset(%Comment{}, %{}))
       |> render("index.html")
-    end
   end
 
   def create(conn, _) do
