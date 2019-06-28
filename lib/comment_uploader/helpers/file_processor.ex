@@ -2,6 +2,10 @@ defmodule CommentUploader.FileProcessor do
   @moduledoc """
   Содержит функции для обработки загруженных или подготовки выгружаемых файлов
   """
+  require Elixlsx
+
+  alias Elixlsx.Sheet
+  alias Elixlsx.Workbook
 
   @doc """
   По заданному пути обрабатывает csv файл и возвращает даные из него в формате для вставки в базу данных
@@ -51,6 +55,30 @@ defmodule CommentUploader.FileProcessor do
     end
     %{gender: String.capitalize(Enum.at(cleaned_list, 0)), city: Enum.at(cleaned_list, 1), text: text, emote: emote,
         month: month, daytime: daytime}
+  end
+
+  @doc """
+  Получает данные для польователя и генерирует по ним excel-файл с отчетом
+  """
+  def generate_excel_file(data) do
+    workbook = %Workbook{sheets:
+        Enum.map(data, &generate_sheet(&1))}
+    Elixlsx.write_to(workbook, "_temp/report.xlsx")
+  end
+
+  @doc """
+  Генерирует excel-лист с данными
+  """
+  def generate_sheet(value) do
+    %Sheet{name: "#{value.param} (#{length(value.records)})",
+      rows: Enum.map(value.records, &([&1["id"], &1["text"]]))}
+  end
+
+  @doc """
+  Отправляет файл пользователю
+  """
+  def init_download(conn, path) do
+
   end
 
 end
