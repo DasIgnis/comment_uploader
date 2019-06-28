@@ -28,33 +28,37 @@ defmodule CommentUploader.FileProcessor do
       |> Enum.map(&String.trim(&1))
     # Теперь у нас есть список [пол, город, текст, timestamp]
     # Обработка полей текста и timestamp
-    text = Enum.at(cleaned_list, 2)
-    emote_val = Veritaserum.analyze(text)
-    emote = cond do
-      emote_val < -5 -> "Very negative"
-      emote_val < 0  -> "Negative"
-      emote_val == 0 -> "Neutral"
-      emote_val < 5  -> "Positive"
-      true           -> "Very positive"
+    if length(cleaned_list) == 4 do
+      text = Enum.at(cleaned_list, 2)
+      emote_val = Veritaserum.analyze(text)
+      emote = cond do
+        emote_val < -5 -> "Very negative"
+        emote_val < 0  -> "Negative"
+        emote_val == 0 -> "Neutral"
+        emote_val < 5  -> "Positive"
+        true           -> "Very positive"
+      end
+      timestamp = case Integer.parse(Enum.at(cleaned_list, 3)) do
+        {timestamp, _} -> timestamp
+        :error         -> 0
+      end
+      datetime = case DateTime.from_unix(timestamp) do
+        {:ok, datetime} -> datetime
+        {:error, _}     -> :error
+      end
+      month = DateTime.to_date(datetime).month
+      hour = DateTime.to_time(datetime).hour
+      daytime = cond do
+        hour < 6  -> "Night"
+        hour < 12 -> "Morning"
+        hour < 18 -> "Day"
+        true      -> "Evening"
+      end
+      %{gender: String.capitalize(Enum.at(cleaned_list, 0)), city: Enum.at(cleaned_list, 1), text: text, emote: emote,
+          month: month, daytime: daytime}
+    else
+      %{}
     end
-    timestamp = case Integer.parse(Enum.at(cleaned_list, 3)) do
-      {timestamp, _} -> timestamp
-      :error         -> 0
-    end
-    datetime = case DateTime.from_unix(timestamp) do
-      {:ok, datetime} -> datetime
-      {:error, _}     -> :error
-    end
-    month = DateTime.to_date(datetime).month
-    hour = DateTime.to_time(datetime).hour
-    daytime = cond do
-      hour < 6  -> "Night"
-      hour < 12 -> "Morning"
-      hour < 18 -> "Day"
-      true      -> "Evening"
-    end
-    %{gender: String.capitalize(Enum.at(cleaned_list, 0)), city: Enum.at(cleaned_list, 1), text: text, emote: emote,
-        month: month, daytime: daytime}
   end
 
   @doc """

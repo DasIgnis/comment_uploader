@@ -6,8 +6,8 @@ defmodule CommentUploader.CommentsTest do
   describe "comments" do
     alias CommentUploader.Comments.Comment
 
-    @valid_attrs %{city: "some city", daytime: "some daytime", emote: 42, gender: "some gender", month: 42, text: "some text"}
-    @update_attrs %{city: "some updated city", daytime: "some updated daytime", emote: 43, gender: "some updated gender", month: 43, text: "some updated text"}
+    @valid_attrs %{city: "some city", daytime: "Morning", emote: "very nice", gender: "Female", month: 4, text: "some text"}
+    @update_attrs %{city: "some updated city", daytime: "Evening", emote: "not so nice", gender: "Male", month: 3, text: "some updated text"}
     @invalid_attrs %{city: nil, daytime: nil, emote: nil, gender: nil, month: nil, text: nil}
 
     def comment_fixture(attrs \\ %{}) do
@@ -32,10 +32,10 @@ defmodule CommentUploader.CommentsTest do
     test "create_comment/1 with valid data creates a comment" do
       assert {:ok, %Comment{} = comment} = Comments.create_comment(@valid_attrs)
       assert comment.city == "some city"
-      assert comment.daytime == "some daytime"
-      assert comment.emote == 42
-      assert comment.gender == "some gender"
-      assert comment.month == 42
+      assert comment.daytime == "Morning"
+      assert comment.emote == "very nice"
+      assert comment.gender == "Female"
+      assert comment.month == 4
       assert comment.text == "some text"
     end
 
@@ -47,10 +47,10 @@ defmodule CommentUploader.CommentsTest do
       comment = comment_fixture()
       assert {:ok, %Comment{} = comment} = Comments.update_comment(comment, @update_attrs)
       assert comment.city == "some updated city"
-      assert comment.daytime == "some updated daytime"
-      assert comment.emote == 43
-      assert comment.gender == "some updated gender"
-      assert comment.month == 43
+      assert comment.daytime == "Evening"
+      assert comment.emote == "not so nice"
+      assert comment.gender == "Male"
+      assert comment.month == 3
       assert comment.text == "some updated text"
     end
 

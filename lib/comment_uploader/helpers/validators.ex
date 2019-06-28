@@ -26,7 +26,7 @@ def validate_daytime(changeset) do
   if time in @daystamps do
     changeset
   else
-    add_error(changeset, :daytime, ": uncorrect gender")
+    add_error(changeset, :daytime, ": uncorrect daytime")
   end
 end
 

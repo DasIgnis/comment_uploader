@@ -3,86 +3,36 @@ defmodule CommentUploaderWeb.CommentControllerTest do
 
   alias CommentUploader.Comments
 
-  @create_attrs %{city: "some city", daytime: "some daytime", emote: 42, gender: "some gender", month: 42, text: "some text"}
-  @update_attrs %{city: "some updated city", daytime: "some updated daytime", emote: 43, gender: "some updated gender", month: 43, text: "some updated text"}
-  @invalid_attrs %{city: nil, daytime: nil, emote: nil, gender: nil, month: nil, text: nil}
-
-  def fixture(:comment) do
-    {:ok, comment} = Comments.create_comment(@create_attrs)
-    comment
-  end
-
   describe "index" do
-    test "lists all comments", %{conn: conn} do
+    test "leads to main page", %{conn: conn} do
       conn = get(conn, Routes.comment_path(conn, :index))
-      assert html_response(conn, 200) =~ "Listing Comments"
+      assert html_response(conn, 200) =~ "В базе данных"
     end
   end
 
-  describe "new comment" do
-    test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.comment_path(conn, :new))
-      assert html_response(conn, 200) =~ "New Comment"
+  describe "create" do
+    test "Responds everything is OK if we send suiting file", %{conn: conn} do
+      upload = %Plug.Upload{path: "test/fixtures/correct.csv", content_type: "text/csv", filename: "correct.csv"}
+      conn = post(conn, Routes.comment_path(conn, :create), %{"comment" => %{"csv" => upload}})
+      assert html_response(conn, 200) =~ "Comments created successfully"
+    end
+
+    test "Shows an error message if file has wrong format", %{conn: conn} do
+      upload = %Plug.Upload{path: "test/fixtures/uncorrect.txt", content_type: "text/plain", filename: "uncorrect.txt"}
+      conn = post(conn, Routes.comment_path(conn, :create), %{"comment" => %{"csv" => upload}})
+      assert html_response(conn, 200) =~ "Wrong file format"
+    end
+
+    test "Shows an error message for csv with uncorrect content", %{conn: conn} do
+      upload = %Plug.Upload{path: "test/fixtures/uncorrect.csv", content_type: "text/csv", filename: "uncorrect.csv"}
+      conn = post(conn, Routes.comment_path(conn, :create), %{"comment" => %{"csv" => upload}})
+      assert html_response(conn, 200) =~ "Error uploading file"
+    end
+
+    test "Shows an error if we don't send any file", %{conn: conn} do
+      conn = post(conn, Routes.comment_path(conn, :create))
+      assert html_response(conn, 200) =~ "No file selected"
     end
   end
 
-  describe "create comment" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.comment_path(conn, :create), comment: @create_attrs)
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.comment_path(conn, :show, id)
-
-      conn = get(conn, Routes.comment_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show Comment"
-    end
-
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.comment_path(conn, :create), comment: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Comment"
-    end
-  end
-
-  describe "edit comment" do
-    setup [:create_comment]
-
-    test "renders form for editing chosen comment", %{conn: conn, comment: comment} do
-      conn = get(conn, Routes.comment_path(conn, :edit, comment))
-      assert html_response(conn, 200) =~ "Edit Comment"
-    end
-  end
-
-  describe "update comment" do
-    setup [:create_comment]
-
-    test "redirects when data is valid", %{conn: conn, comment: comment} do
-      conn = put(conn, Routes.comment_path(conn, :update, comment), comment: @update_attrs)
-      assert redirected_to(conn) == Routes.comment_path(conn, :show, comment)
-
-      conn = get(conn, Routes.comment_path(conn, :show, comment))
-      assert html_response(conn, 200) =~ "some updated city"
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, comment: comment} do
-      conn = put(conn, Routes.comment_path(conn, :update, comment), comment: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit Comment"
-    end
-  end
-
-  describe "delete comment" do
-    setup [:create_comment]
-
-    test "deletes chosen comment", %{conn: conn, comment: comment} do
-      conn = delete(conn, Routes.comment_path(conn, :delete, comment))
-      assert redirected_to(conn) == Routes.comment_path(conn, :index)
-      assert_error_sent 404, fn ->
-        get(conn, Routes.comment_path(conn, :show, comment))
-      end
-    end
-  end
-
-  defp create_comment(_) do
-    comment = fixture(:comment)
-    {:ok, comment: comment}
-  end
 end

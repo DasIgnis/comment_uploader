@@ -32,7 +32,7 @@ defmodule CommentUploaderWeb.CommentController do
         {:error, _, _, _} -> %{key: :error, message: "Error uploading file."}
       end
     else
-      %{key: :error, meessage: "Wrong file format"}
+      %{key: :error, message: "Wrong file format"}
     end
     conn
       |> put_flash(status.key, status.message)
