@@ -10,8 +10,11 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :comment_uploader, CommentUploaderWeb.Endpoint,
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  http: [:inet6, port: System.get_env("PORT") || 4000],
+  url: [scheme: "https", host: "safe-caverns-77003.herokuapp.com", port: 443],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -59,6 +62,14 @@ config :logger, level: :info
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
+
+# Configure your database
+config :comment_uploader, CommentUploader.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  ssl: true
+
 
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
