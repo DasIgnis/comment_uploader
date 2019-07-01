@@ -22,6 +22,7 @@ defmodule CommentUploaderWeb.ReportController do
           "excel" ->
             case FileProcessor.generate_excel_file(data) do
               {:ok, path} -> FileProcessor.init_download(conn, path)
+                  %{key: :info, message: "File download started"}
               {:error, _} -> %{key: :error, message: "Error downloading file, try again"}
             end
         end

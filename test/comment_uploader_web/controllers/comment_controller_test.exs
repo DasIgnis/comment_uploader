@@ -1,8 +1,6 @@
 defmodule CommentUploaderWeb.CommentControllerTest do
   use CommentUploaderWeb.ConnCase
 
-  alias CommentUploader.Comments
-
   describe "index" do
     test "leads to main page", %{conn: conn} do
       conn = get(conn, Routes.comment_path(conn, :index))
