@@ -1,20 +1,7 @@
 # CommentUploader
 
-To start your Phoenix server:
+An Elixir web app, used to process various reviews of some app, that were taken in different cities. Features:
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+  * Supports upload of users' files in .csv format, containing data like 'Name, gender, city, review, timestamp'
+  * Generates analytical reports based on gender, city, emotional reaction, month and daytime
+  * Generates Excel-file with report and sends in to user
